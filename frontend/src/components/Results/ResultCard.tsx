@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import Hls from 'hls.js';
+import { API_BASE_URL } from '../../config';
 import './ResultCard.css';
 import type { SearchResult } from '../../App';
 
@@ -23,7 +24,7 @@ const ResultCard: React.FC<ResultCardProps> = ({ indexId, clip }) => {
 
     const fetchPlayableVideo = async () => {
       try {
-        const response = await axios.get(`/api/videos/${indexId}/${clip.video_id}`);
+        const response = await axios.get(`${API_BASE_URL}/api/videos/${indexId}/${clip.video_id}`);
         if (isMounted) {
           if (response.data && response.data.hls && response.data.hls.video_url) {
             setVideoUrl(response.data.hls.video_url);
@@ -47,7 +48,7 @@ const ResultCard: React.FC<ResultCardProps> = ({ indexId, clip }) => {
 
     const analyzeVideo = async () => {
       try {
-        const response = await axios.post(`/api/analyze/${indexId}/${clip.video_id}`);
+        const response = await axios.post(`${API_BASE_URL}/api/analyze/${indexId}/${clip.video_id}`);
         if (isMounted) {
           setVideoTitle(response.data.title || 'Untitled Video');
           setExplanation(response.data.summary || 'Summary could not be generated.');

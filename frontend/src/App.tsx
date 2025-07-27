@@ -15,6 +15,7 @@ import Indexer from './components/Indexer/Indexer';
 import Prompts from './components/Prompts/Prompts';
 import CustomPrompt from './components/CustomPrompt/CustomPrompt';
 import Results from './components/Results/Results';
+import { API_BASE_URL } from './config';
 
 function App() {
   const [indexId, setIndexId] = useState('');
@@ -23,7 +24,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [engineeredPrompt, setEngineeredPrompt] = useState('');
 
-  const handleSearch = async (prompt: string) => {
+const handleSearch = async (prompt: string) => {
     
     if (!indexId) {
       alert('Please enter an Index ID');
@@ -31,7 +32,7 @@ function App() {
     }
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:3001/api/search', {
+      const response = await axios.post(`${API_BASE_URL}/api/search`, {
         indexId,
         prompt,
       });
@@ -55,7 +56,7 @@ function App() {
 
     try {
       // Step 1: Engineer the prompt
-      const engineerResponse = await axios.post('http://localhost:3001/api/engineer-prompt', {
+      const engineerResponse = await axios.post(`${API_BASE_URL}/api/engineer-prompt`, {
         prompt: rawPrompt,
       });
       const finalPrompt = engineerResponse.data.engineeredPrompt;
