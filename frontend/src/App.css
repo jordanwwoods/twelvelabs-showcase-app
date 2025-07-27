@@ -1,0 +1,30 @@
+#root.App {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.app-logo {
+  height: 160px; /* 4x bigger */
+  margin: 0 auto 2rem auto; /* Centered with bottom margin */
+  display: block;
+}
+
+.engineered-prompt-display {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background-color: #2f2f33;
+  border: 1px solid #4e4e52;
+  border-radius: 8px;
+  color: #c7c7c7;
+  text-align: left;
+}
+
+.engineered-prompt-display p {
+  margin: 0;
+}
+
+.engineered-prompt-display strong {
+  color: #a38cdf;
+}

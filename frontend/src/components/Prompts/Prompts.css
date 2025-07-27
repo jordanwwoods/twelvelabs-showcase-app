@@ -1,0 +1,48 @@
+.prompts-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.prompt-button, .prompt-input {
+  background-color: #3a3a3a;
+  border: 1px solid #555;
+  color: white;
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  font-family: inherit;
+}
+
+.prompt-button:hover {
+  background-color: #4a4a4a;
+  border-color: #777;
+  transform: translateY(-2px);
+}
+
+.prompt-input {
+  cursor: text;
+}
+
+.context-menu {
+  position: absolute;
+  background-color: #2c2c2c;
+  border: 1px solid #555;
+  border-radius: 8px;
+  padding: 0.5rem 0;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.context-menu div {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+.context-menu div:hover {
+  background-color: #3a3a3a;
+}
