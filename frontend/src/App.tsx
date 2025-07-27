@@ -19,12 +19,12 @@ import Results from './components/Results/Results';
 function App() {
   const [indexId, setIndexId] = useState('');
   const [results, setResults] = useState<SearchResult | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
+  
   const [loading, setLoading] = useState(false);
   const [engineeredPrompt, setEngineeredPrompt] = useState('');
 
   const handleSearch = async (prompt: string) => {
-    setSearchQuery(prompt);
+    
     if (!indexId) {
       alert('Please enter an Index ID');
       return;
@@ -82,7 +82,7 @@ function App() {
           <p><strong>Engineered Prompt:</strong> {engineeredPrompt}</p>
         </div>
       )}
-      <Results indexId={indexId} results={results} searchQuery={searchQuery} loading={loading} />
+      <Results indexId={indexId} results={results} loading={loading} />
     </div>
   );
 }

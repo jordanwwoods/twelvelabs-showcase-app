@@ -6,13 +6,12 @@ import './Results.css';
 // Updated Clip interface to match API response
 
 interface ResultsProps {
-  results: SearchResult | null;
   indexId: string;
-  searchQuery: string;
+  results: SearchResult | null;
   loading: boolean;
 }
 
-const Results: React.FC<ResultsProps> = ({ results, indexId, searchQuery, loading }) => {
+const Results: React.FC<ResultsProps> = ({ indexId, results, loading }) => {
   if (loading) {
     return <div className="results-container loading">Loading...</div>;
   }
@@ -26,7 +25,7 @@ const Results: React.FC<ResultsProps> = ({ results, indexId, searchQuery, loadin
       <h2>Results</h2>
       <div className="results-grid">
         {results.data.map((clip) => (
-                        <ResultCard key={`${clip.video_id}-${clip.start}`} indexId={indexId} clip={clip} searchQuery={searchQuery} />
+          <ResultCard key={`${clip.video_id}-${clip.start}`} indexId={indexId} clip={clip} />
         ))}
       </div>
     </div>
