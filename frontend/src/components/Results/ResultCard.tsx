@@ -3,14 +3,18 @@ import axios from 'axios';
 import Hls from 'hls.js';
 import { API_BASE_URL } from '../../config';
 import './ResultCard.css';
-import type { SearchResult } from '../../App';
 
 interface ResultCardProps {
   indexId: string;
-  clip: SearchResult['data'][0];
+  apiKey: string;
+  videoId: string;
+  start: number;
+  end: number;
+  confidence: string;
+  thumbnailUrl: string;
 }
 
-const ResultCard: React.FC<ResultCardProps> = ({ indexId, clip }) => {
+const ResultCard: React.FC<ResultCardProps> = ({ indexId, apiKey, videoId, start, end, confidence, thumbnailUrl }) => {
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [videoTitle, setVideoTitle] = useState<string>('Generating title...');
   const [explanation, setExplanation] = useState<string>('Generating summary...');
@@ -24,20 +28,22 @@ const ResultCard: React.FC<ResultCardProps> = ({ indexId, clip }) => {
 
     const fetchPlayableVideo = async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/api/videos/${indexId}/${clip.video_id}`);
+        // The video URL doesn't need the API key as it's a direct stream URL from Twelve Labs,
+        // which our backend retrieves for us.
+        const response = await axios.get(`${API_BASE_URL}/api/videos/${indexId}/${videoId}`);
         if (isMounted) {
           if (response.data && response.data.hls && response.data.hls.video_url) {
             setVideoUrl(response.data.hls.video_url);
-            setError(null); // Clear processing message
+            setError(null);
             if (pollInterval) clearInterval(pollInterval);
           } else if (!pollInterval) {
-            pollInterval = setInterval(fetchPlayableVideo, 5000);
+            pollInterval = window.setInterval(fetchPlayableVideo, 5000);
           }
         }
       } catch (err) {
         if (isMounted) {
           if (axios.isAxiosError(err) && err.response?.status === 404) {
-            if (!pollInterval) pollInterval = setInterval(fetchPlayableVideo, 5000);
+            if (!pollInterval) pollInterval = window.setInterval(fetchPlayableVideo, 5000);
           } else {
             setError('Failed to load video stream.');
             if (pollInterval) clearInterval(pollInterval);
@@ -48,7 +54,12 @@ const ResultCard: React.FC<ResultCardProps> = ({ indexId, clip }) => {
 
     const analyzeVideo = async () => {
       try {
-        const response = await axios.post(`${API_BASE_URL}/api/analyze/${indexId}/${clip.video_id}`);
+        // The analyze endpoint *does* need the API key.
+        const response = await axios.post(`${API_BASE_URL}/api/analyze`, {
+          indexId,
+          videoId,
+          apiKey, // Pass the API key to the backend
+        });
         if (isMounted) {
           setVideoTitle(response.data.title || 'Untitled Video');
           setExplanation(response.data.summary || 'Summary could not be generated.');
@@ -58,11 +69,7 @@ const ResultCard: React.FC<ResultCardProps> = ({ indexId, clip }) => {
           setVideoTitle('Untitled Video');
           setExplanation('Summary could not be generated.');
         }
-        if (axios.isAxiosError(err)) {
-          console.error('Detailed error from backend:', err.response?.data);
-        } else {
-          console.error('Error analyzing video:', err);
-        }
+        console.error('Error analyzing video:', err);
       }
     };
 
@@ -73,7 +80,7 @@ const ResultCard: React.FC<ResultCardProps> = ({ indexId, clip }) => {
       isMounted = false;
       if (pollInterval) clearInterval(pollInterval);
     };
-  }, [indexId, clip.video_id]);
+  }, [indexId, videoId, apiKey]);
 
   useEffect(() => {
     if (videoRef.current && videoUrl) {
@@ -84,18 +91,18 @@ const ResultCard: React.FC<ResultCardProps> = ({ indexId, clip }) => {
         hls.loadSource(videoUrl);
         hls.attachMedia(videoElement);
         hls.on(Hls.Events.MANIFEST_PARSED, () => {
-          videoElement.currentTime = clip.start;
+          videoElement.currentTime = start;
         });
       } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
         videoElement.src = videoUrl;
-        videoElement.currentTime = clip.start;
+        videoElement.currentTime = start;
       }
 
       return () => {
         hls.destroy();
       };
     }
-  }, [videoUrl, clip.start]);
+  }, [videoUrl, start]);
 
   const formatTime = (seconds: number) => new Date(seconds * 1000).toISOString().substr(11, 8);
 
@@ -113,7 +120,7 @@ const ResultCard: React.FC<ResultCardProps> = ({ indexId, clip }) => {
               <video ref={videoRef} controls width="100%" height="100%" crossOrigin="anonymous" />
             ) : (
               <div className="thumbnail-container">
-                <img src={clip.thumbnail_url} alt="Video thumbnail" className="thumbnail-img" />
+                <img src={thumbnailUrl} alt="Video thumbnail" className="thumbnail-img" />
                 <div className="loader-overlay">
                   {error ? <p className="error-message">{error}</p> : <div className="loader"></div>}
                 </div>
@@ -121,8 +128,8 @@ const ResultCard: React.FC<ResultCardProps> = ({ indexId, clip }) => {
             )}
           </div>
           <div className="clip-info">
-            <span>{formatTime(clip.start)} - {formatTime(clip.end)}</span>
-            <span>Confidence: {clip.confidence}</span>
+            <span>{formatTime(start)} - {formatTime(end)}</span>
+            <span>Confidence: {confidence}</span>
           </div>
           <button onClick={handleFlip} className="flip-button">i</button>
         </div>
@@ -132,8 +139,8 @@ const ResultCard: React.FC<ResultCardProps> = ({ indexId, clip }) => {
             <p>{explanation}</p>
             <h4>Clip Details</h4>
             <p><strong>Video:</strong> {videoTitle}</p>
-            <p><strong>Timestamp:</strong> {formatTime(clip.start)} - {formatTime(clip.end)}</p>
-            <p><strong>Confidence:</strong> {clip.confidence}</p>
+            <p><strong>Timestamp:</strong> {formatTime(start)} - {formatTime(end)}</p>
+            <p><strong>Confidence:</strong> {confidence}</p>
           </div>
           <button onClick={handleFlip} className="flip-button">↩</button>
         </div>

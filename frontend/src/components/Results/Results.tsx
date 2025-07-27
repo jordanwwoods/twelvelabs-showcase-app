@@ -1,33 +1,38 @@
 import React from 'react';
-import type { SearchResult } from '../../App';
-import ResultCard from './ResultCard'; // Import the new component
 import './Results.css';
-
-// Updated Clip interface to match API response
+import ResultCard from './ResultCard';
+import { SearchResult } from '../../types';
 
 interface ResultsProps {
   indexId: string;
+  apiKey: string;
   results: SearchResult | null;
   loading: boolean;
 }
 
-const Results: React.FC<ResultsProps> = ({ indexId, results, loading }) => {
+const Results: React.FC<ResultsProps> = ({ indexId, apiKey, results, loading }) => {
   if (loading) {
-    return <div className="results-container loading">Loading...</div>;
+    return <div className="loading-spinner"></div>;
   }
 
-  if (!results || !results.data || results.data.length === 0) {
-    return null;
+  if (!results || results.data.length === 0) {
+    return <div className="no-results"></div>;
   }
 
   return (
-    <div className="results-container">
-      <h2>Results</h2>
-      <div className="results-grid">
-        {results.data.map((clip) => (
-          <ResultCard key={`${clip.video_id}-${clip.start}`} indexId={indexId} clip={clip} />
-        ))}
-      </div>
+    <div className="results-grid">
+      {results.data.map((result, i) => (
+        <ResultCard
+          key={`${result.video_id}-${i}`}
+          indexId={indexId}
+          apiKey={apiKey}
+          videoId={result.video_id}
+          start={result.start}
+          end={result.end}
+          confidence={result.confidence}
+          thumbnailUrl={result.thumbnail_url}
+        />
+      ))}
     </div>
   );
 };
