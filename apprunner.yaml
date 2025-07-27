@@ -3,10 +3,9 @@ runtime: nodejs18
 build:
   commands:
     build:
-      - cd backend
-      - npm install
+      - cd backend && npm install
 run:
-  command: node index.js
+  command: node backend/index.js
   network:
     port: 3001
   variables:
