@@ -31,6 +31,11 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 
+// Root endpoint for health check
+app.get('/', (req, res) => {
+  res.status(200).send('Backend is healthy');
+});
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.status(200).send('Backend is healthy');
