@@ -6,7 +6,7 @@ import Indexer from './components/Indexer/Indexer';
 import Prompts from './components/Prompts/Prompts';
 import CustomPrompt from './components/CustomPrompt/CustomPrompt';
 import Results from './components/Results/Results';
-import { SearchResult } from './types';
+import type { SearchResult } from './types';
 import { API_BASE_URL } from './config';
 
 function App() {

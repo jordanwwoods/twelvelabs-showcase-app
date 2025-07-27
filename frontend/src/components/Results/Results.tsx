@@ -1,7 +1,7 @@
 import React from 'react';
 import './Results.css';
 import ResultCard from './ResultCard';
-import { SearchResult } from '../../types';
+import type { SearchResult } from '../../types';
 
 interface ResultsProps {
   indexId: string;
