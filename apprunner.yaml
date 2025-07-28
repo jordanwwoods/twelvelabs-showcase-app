@@ -2,9 +2,9 @@ version: 1.0
 runtime: nodejs18
 build:
   commands:
-    build: "echo '--- Listing root directory ---' && ls -la && echo '--- Changing to backend directory ---' && cd backend && echo '--- Listing backend directory ---' && ls -la && echo '--- Running npm install ---' && npm install"
+    build: npm install
 run:
-  command: "cd backend && npm start"
+  command: npm start
   network:
     port: 3001
   variables:
